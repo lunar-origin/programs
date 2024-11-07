@@ -104,20 +104,15 @@ between.model = function(df) {
       model = lm(formula, data = df_transformed_no_na)
       aic = AIC(model)
       
-      # 決定係数（R²）の抽出
-      summary_model = summary(model)
-      r_squared = summary_model$r.squared
-      
       # 結果をリストに保存
       results_list[[paste0("Grouping_", gsub("\\+", "_", grouping))]] = 
-        c("Grouping" = column_name, "AIC" = aic, "R_Squared" = r_squared)
+        c("Grouping" = column_name, "AIC" = aic)
     }
   }
   
   # 結果のデータフレームを作成
   results_df = bind_rows(results_list)
   results_df$AIC = as.numeric(results_df$AIC)
-  results_df$R_Squared = as.numeric(results_df$R_Squared)
   
   # AICに基づいてソート
   results_df_sorted = results_df %>% arrange(AIC)
@@ -149,7 +144,7 @@ within.model = function(df) {
     # モデル式の設定
     column_name = paste0("", gsub("\\+", "_", grouping))
     formula = if ("+" %in% strsplit(grouping, "")[[1]]) {
-      as.formula(paste("Value ~ Subjects + ", column_name))
+      as.formula(paste("Value ~ Participant + ", column_name))
     } else {
       as.formula("Value ~ 1")
     }
@@ -163,20 +158,15 @@ within.model = function(df) {
       model = aov(formula, data = df_transformed_no_na)
       aic = AIC(model)
       
-      # 決定係数（R²）の抽出
-      summary_model = summary.lm(model)
-      r_squared = summary_model$r.squared
-      
       # 結果をリストに保存
       results_list[[paste0("Grouping_", gsub("\\+", "_", grouping))]] = 
-        c("Grouping" = column_name, "AIC" = aic, "R_Squared" = r_squared)
+        c("Grouping" = column_name, "AIC" = aic)
     }
   }
   
   # 結果のデータフレームを作成
   results_df = bind_rows(results_list)
   results_df$AIC = as.numeric(results_df$AIC)
-  results_df$R_Squared = as.numeric(results_df$R_Squared)
   
   # AICに基づいてソート
   results_df_sorted = results_df %>% arrange(AIC)
